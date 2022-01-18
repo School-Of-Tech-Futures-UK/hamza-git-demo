@@ -18,7 +18,7 @@
         <div class="boldText" id="overlayText"> Well Done!</div>
     </div> -->
 
-    <nav class="navbar sticky-top navbar-light bg-light navbar-custom">
+    <nav class="navbar sticky-top navbar-light bg-light navbartop-custom">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">
             <img style="padding: 0px 0px 4px 10px;" src="Assets/Images/Acc_Logo_Black_Purple_RGB.png" alt="accenture" width="120" class="d-inline-block align-text-top">
@@ -26,7 +26,14 @@
         </div>
       </nav>
 
-    <!-- <img class="justifyLeft" src=https://www.accenture.com/t20180820T080700Z__w__/gb-en/_acnmedia/Accenture/Dev/Redesign/Acc_Logo_Black_Purple_RGB.png width=100px> -->
+      <!-- <p id="winner-display">The winner is <span id="winner-name"></span></p> -->
+
+      <nav class="navbar fixed-bottom navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#" id="winner-display">The winner is <span id="winner-name"></span></a>
+        </div>
+      </nav>
+
  
 <div class="header">
     <h6><span class="boldText">Accenture</span> Technology</h6>
@@ -34,7 +41,7 @@
     <br/>
     <h1 class="largeText boldText">Connect 4</h1>
 </div>
-    <p id="winner-display">The winner is <span id="winner-name"></span></p>
+    <!-- <p id="winner-display">The winner is <span id="winner-name"></span></p> -->
 
 <div class="parentFlex">
     <!-- <div class="progress">
@@ -42,6 +49,10 @@
     </div> -->
     <div class="childFlex1">
         <h4 class="boldText">Game Controls</h4>
+<br/>
+    <p> Red score: <br/><span class = "boldText" id="player1Score"><br/></span></p>
+<br/>
+    <p> Yellow score: <br/><span class = "boldText" id="player2Score"><br/></span></p>
 <br/>
     <p> Current turn: <span id="player-name"><br/><span id="playerIndicator"></span> </span></p>    
 <br/>    
@@ -109,7 +120,6 @@
 </div>
 
     <script src="./connect4.js"></script>
-
 
 </body>
 
