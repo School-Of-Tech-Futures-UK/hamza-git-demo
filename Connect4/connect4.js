@@ -5,8 +5,8 @@ let overallWinner = null
 let checkCell = 0
 let player1Score = 0
 let player2Score = 0
-let player1Name = 'Num1'
-let player2Name = 'Num2'
+let player1Name = ''
+let player2Name = ''
 
 let gameBoard = [
   [null, null, null, null, null, null, null],
@@ -27,6 +27,7 @@ const winMatrix = [
 
 function currentTurn () {
   if (turn === 0) {
+    getLeaderboardData()
     document.getElementById('connect4Board').classList.remove('remove')
     // const playerTurn=document.getElementById("player-name")
     // playerTurn.innerText = "red";
@@ -130,7 +131,8 @@ function resetBoard () {
 
 function displayWinner () {
   calculateScore()
-  updateLeaderBoard()
+  updateScoreBoard()
+  getLeaderboardData()
   const winnerName = document.getElementById('winner-name')
   const winnerDisplay = document.getElementById('winner-display')
   // console.log(overallWinner)
@@ -142,12 +144,12 @@ function displayWinner () {
   } else if (overallWinner === 'red') {
     winnerDisplay.style.display = 'block'
     winnerName.innerText = 'red'
-    const offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
-    // eslint-disable-next-line no-unused-vars
-    const offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
-      // eslint-disable-next-line no-undef
-      return new bootstrap.Offcanvas(offcanvasEl)
-    })
+    // const offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
+    // // eslint-disable-next-line no-unused-vars
+    // const offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
+    //   // eslint-disable-next-line no-undef
+    //   return new bootstrap.Offcanvas(offcanvasEl)
+    // })
   } else if (overallWinner === 'yellow') {
     winnerDisplay.style.display = 'block'
     winnerName.innerText = 'yellow'
@@ -259,7 +261,7 @@ function checkNegDiag (rowNumInt, colNumInt) {
   }
 }
 
-// function updateLeaderBoard () {
+// function updateScoreBoard () {
 //   const fetch = require('node-fetch')
 
 //   fetch('localhost:4000/scoreboard')
@@ -275,26 +277,46 @@ function checkNegDiag (rowNumInt, colNumInt) {
 //   )
 // }
 
-function updateLeaderBoard () {
-  const uploadScore = [{ 'player name 1': player1Name, 'score 1': player1Score, 'player counter 1': 'Red' }, { 'player name 2': player2Name, 'score 2': player2Score, 'player counter 2': 'Yellow' }]
-  fetch('http://localhost:4000/scoreboard', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ uploadScore })
-  })
-    .then(function (response) {
-      if (response.ok) {
-        return
-      } throw new Error('Request Failed')
+function updateScoreBoard () {
+  if (overallWinner === 'red') {
+    const uploadScore = { playername: player1Name, score: player1Score, playercounter: 'red' }
+    fetch('http://localhost:4000/scoreboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(uploadScore)
     })
-    .catch(function (error) {
-      console.log(error)
+      .then(function (response) {
+        if (response.ok) {
+          return
+        } throw new Error('Request Failed')
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  } else if (overallWinner === 'yellow') {
+    const uploadScore = { playername: player2Name, score: player2Score, playercounter: 'ellow' }
+    fetch('http://localhost:4000/scoreboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(uploadScore)
     })
+      .then(function (response) {
+        if (response.ok) {
+          return
+        } throw new Error('Request Failed')
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  } else return null
 }
 
-function closeOverlay() {
+// eslint-disable-next-line no-unused-vars
+function closeOverlay () {
   document.getElementById('overlay').style.display = 'none'
-  console.log(document.getElementById('player1Name').innerHTML)
+  player1Name = document.getElementById('playername1').value
+  player2Name = document.getElementById('playername2').value
+  // console.log(document.getElementById('player1Name').innerHTML)
 }
 
 function calculateScore () {
@@ -307,5 +329,26 @@ function calculateScore () {
   } else {
     player1Score = 0
     player2Score = 0
+  }
+}
+
+const getLeaderboardData = async () => {
+  const resp = await fetch('http://localhost:4000/scoreboard')
+  const updatedData = await resp.json()
+  return await processUpdatedData(updatedData)
+}
+
+function processUpdatedData (updatedData) {
+  if (turn > 0) {
+    const sortByScore = (a, b) => b.score - a.score
+    let sortedData = updatedData.sort(sortByScore)
+    console.log(sortedData)
+    // eslint-disable-next-line no-undef
+    for (i = 0; i < 5 && i < sortedData.length; i++) {
+      // eslint-disable-next-line no-undef
+      document.getElementById(`scoreName${i + 1}`).innerText = sortedData[i].playername
+      // eslint-disable-next-line no-undef
+      document.getElementById(`scoreValue${i + 1}`).innerText = sortedData[i].score
+    }
   }
 }

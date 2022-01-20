@@ -121,6 +121,10 @@ body {
     align-items: center;
 }
 
+.navbarbottom-custom {
+    background-color: transparent;
+}
+
 #playerIndicator {
     height: 50px;
     width: 50px;
