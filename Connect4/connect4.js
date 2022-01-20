@@ -5,6 +5,8 @@ let overallWinner = null
 let checkCell = 0
 let player1Score = 0
 let player2Score = 0
+let player1Name = 'Num1'
+let player2Name = 'Num2'
 
 let gameBoard = [
   [null, null, null, null, null, null, null],
@@ -51,7 +53,6 @@ function takeTurn (e) {
       document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'red'
       document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
       player1 = 'yellow'
-      player1Score++
       document.getElementById('player1Score').innerText = player1Score
     } else {
       document.getElementById('playerIndicator').style.backgroundColor = 'red'
@@ -59,7 +60,6 @@ function takeTurn (e) {
       document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'yellow'
       document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
       player1 = 'red'
-      player2Score++
       document.getElementById('player2Score').innerText = player2Score
     }
 
@@ -67,7 +67,6 @@ function takeTurn (e) {
     const rowNumInt = Number(minRow) // Convert minRow from string to integer
     // eslint-disable-next-line no-unused-vars
     const colNumInt = Number(colNum) // Convert colNum from string to integer
-    checkWinner(rowNumInt, colNumInt)
     checkRows(rowNumInt, colNumInt)
     if (overallWinner === null) {
       checkColumns(rowNumInt, colNumInt)
@@ -104,9 +103,9 @@ function resetBoard () {
   minRow = 0
   resetInit = 1
   overallWinner = null
-  player1Score = 0
+  player1Score = 42
   document.getElementById('player1Score').innerText = ''
-  player2Score = 0
+  player2Score = 42
   document.getElementById('player2Score').innerText = ''
   document.getElementById('playerIndicator').style.backgroundColor = 'red'
   displayWinner()
@@ -130,6 +129,8 @@ function resetBoard () {
 }
 
 function displayWinner () {
+  calculateScore()
+  updateLeaderBoard()
   const winnerName = document.getElementById('winner-name')
   const winnerDisplay = document.getElementById('winner-display')
   // console.log(overallWinner)
@@ -156,90 +157,6 @@ function displayWinner () {
     return 'nobody'
   // eslint-disable-next-line no-unused-expressions
   } else null
-}
-
-function checkWinner (minRow, colNum) {
-  const winMatrix = [
-    [0, 1, 2, 3],
-    [-1, 0, 1, 2],
-    [-2, -1, 0, 1],
-    [-3, -2, -1, 0]
-  ]
-
-  const rowNumInt = Number(minRow) // Convert minRow from string to integer
-  const colNumInt = Number(colNum) // Convert colNum from string to integer
-
-  for (checkCell = 0; checkCell < 4; checkCell++) {
-    // Rows
-    if (gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][0]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][1]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][2]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][3]] === 'red') {
-      // eslint-disable-next-line no-return-assign
-      return overallWinner = 'red'
-    } else if (gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][0]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][1]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][2]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][3]] === 'yellow') {
-      // eslint-disable-next-line no-return-assign
-      return overallWinner = 'yellow'
-
-      // Columns
-    } else if ((rowNumInt - winMatrix[checkCell][0]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][0]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][1]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][1]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][2]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][2]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][3]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][3]) <= 5) {
-      if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt] === 'red') {
-        // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      } else if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt] === 'yellow') {
-        // eslint-disable-next-line no-return-assign
-        return overallWinner = 'yellow'
-      } else if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'red') {
-        // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      } else if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'yellow') {
-        // eslint-disable-next-line no-return-assign
-        return overallWinner = 'yellow'
-      } else if (turn === 42) {
-      // console.log(obj = {
-      //     //[5][0]
-      //     current: `RowNum${rowNumInt}: R${[rowNumInt+winMatrix[checkCell][0]]}C${[colNumInt+winMatrix[checkCell][0]]}`,
-      //     //[]
-      //     prev1: `RowNum${rowNumInt}: R${[rowNumInt+winMatrix[checkCell][1]]}C${[colNumInt+winMatrix[checkCell][1]]}`,
-      //     //[]
-      //     prev2: `RowNum${rowNumInt}: R${[rowNumInt+winMatrix[checkCell][2]]}C${[colNumInt+winMatrix[checkCell][2]]}`,
-      //     //[]
-      //     prev3: `RowNum${rowNumInt}: R${[rowNumInt+winMatrix[checkCell][3]]}C${[colNumInt+winMatrix[checkCell][3]]}`
-      // })
-      //     gameBoard[rowNumInt+winMatrix[checkCell][0]][colNumInt+winMatrix[checkCell][0]]=="red"
-      // && gameBoard[rowNumInt+winMatrix[checkCell][1]][colNumInt+winMatrix[checkCell][1]]=="red"
-      // && gameBoard[rowNumInt+winMatrix[checkCell][2]][colNumInt+winMatrix[checkCell][2]]=="red"
-      // && gameBoard[rowNumInt+winMatrix[checkCell][3]][colNumInt+winMatrix[checkCell][3]]=="red"
-        console.log('Test')
-        // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      // eslint-disable-next-line no-unused-expressions
-      } else null
-    // eslint-disable-next-line no-unused-expressions
-    } else null
-  }
 }
 
 function checkRows (rowNumInt, colNumInt) {
@@ -339,5 +256,56 @@ function checkNegDiag (rowNumInt, colNumInt) {
         return overallWinner = 'yellow'
       } else { overallWinner = null }
     }
+  }
+}
+
+// function updateLeaderBoard () {
+//   const fetch = require('node-fetch')
+
+//   fetch('localhost:4000/scoreboard')
+//     .then(resp => resp.json())
+//   const getHighestScore = async () => {
+//     const resp = await fetch('localhost:4000/scoreboard')
+//     const json = await resp.json()
+//     return await json.score
+//   }
+
+//   getHighestScore().then(
+//     score => console.log(`Ditto's score is ${score}`)
+//   )
+// }
+
+function updateLeaderBoard () {
+  const uploadScore = [{ 'player name 1': player1Name, 'score 1': player1Score, 'player counter 1': 'Red' }, { 'player name 2': player2Name, 'score 2': player2Score, 'player counter 2': 'Yellow' }]
+  fetch('http://localhost:4000/scoreboard', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uploadScore })
+  })
+    .then(function (response) {
+      if (response.ok) {
+        return
+      } throw new Error('Request Failed')
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').style.display = 'none'
+  console.log(document.getElementById('player1Name').innerHTML)
+}
+
+function calculateScore () {
+  if (overallWinner === 'red') {
+    player1Score = 42 - turn
+    player2Score = 0
+  } else if (overallWinner === 'yellow') {
+    player1Score = 0
+    player2Score = 42 - turn
+  } else {
+    player1Score = 0
+    player2Score = 0
   }
 }

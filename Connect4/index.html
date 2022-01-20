@@ -15,7 +15,24 @@
 <body>
 
     <!-- <div id="overlay">
-        <div class="boldText" id="overlayText"> Well Done!</div>
+        <div id="overlayText"> 
+            <span class = "boldText"> Welcome to Connect 4! </span> <br/> 
+            <span class="semiBoldText mediumText"> Enter your names below to get started: </span>
+            <br/>
+            <br/>
+            <form>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Player 1</span>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" id="player1Name">
+                </div>      
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Player 2</span>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-primary" onclick="closeOverlay()">Done</button>
+            </form>
+        </div>
     </div> -->
 
     <nav class="navbar sticky-top navbar-light bg-light navbartop-custom">
@@ -117,6 +134,34 @@
     </div>
 
 
+</div>
+
+<div>
+    <div class="scoreHeader">
+        <div class="boldText">Leaderboard</div>
+    </div>
+    <div class="scoreRow">
+        <div class="scoreCol">Name1:<span id="scoreName1"></span></div>
+        <div class="scoreCol">Score1:<span id="scoreValue1"></span></div>
+    </div>
+    <div class="scoreRow">
+        <div class="scoreCol">Name1:<span id="scoreName2"></span></div>
+        <div class="scoreCol">Score1:<span id="scoreValue2"></span></div>
+    </div>
+    <div class="scoreRow">
+        <div class="scoreCol">Name1:<span id="scoreName3"></span></div>
+        <div class="scoreCol">Score1:<span id="scoreValue3"></span></div>
+    </div>
+    <div class="scoreRow">
+        <div class="scoreCol">Name1:<span id="scoreName4"></span></div>
+        <div class="scoreCol">Score1:<span id="scoreValue4"></span></div>
+    </div>
+    <div class="scoreRow">
+        <div class="scoreCol">Name1:<span id="scoreName5"></span></div>
+        <div class="scoreCol">Score1:<span id="scoreValue5"></span></div>
+    </div>
+<br/>
+    
 </div>
 
     <script src="./connect4.js"></script>
