@@ -336,7 +336,7 @@ function processUpdatedData (updatedData) {
     // eslint-disable-next-line no-undef
     for (i = 0; i < 10 && i < sortedData.length; i++) {
       // eslint-disable-next-line no-undef
-      document.getElementById(`scoreName${i + 1}`).innerText = sortedData[i].playername
+      document.getElementById(`scoreName${i + 1}`).innerText = `${sortedData[i].playername} (${sortedData[i].playercounter})`
       // eslint-disable-next-line no-undef
       document.getElementById(`scoreValue${i + 1}`).innerText = sortedData[i].score
     }

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable node/no-path-concat */
 const express = require('express')
 const fs = require('fs')
 
@@ -30,12 +32,14 @@ app.post('/scoreboard', (req, res) => {
 })
 
 app.get('/scoreboard_get', (req, res) => {
+  // eslint-disable-next-line node/no-path-concat
   const scoreJSON = fs.readFileSync(__dirname + '/leaderboard.json', 'utf8')
   res.send(scoreJSON)
 })
 
 // eslint-disable-next-line no-var
 var bodyParser = require('body-parser')
+// eslint-disable-next-line no-unused-vars
 const { response } = require('express')
 app.use(bodyParser.json()) // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
