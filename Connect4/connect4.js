@@ -54,14 +54,12 @@ function takeTurn (e) {
       document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'red'
       document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
       player1 = 'yellow'
-      document.getElementById('player1Score').innerText = player1Score
     } else {
       document.getElementById('playerIndicator').style.backgroundColor = 'red'
       gameBoard[minRow][colNum] = 'yellow'
       document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'yellow'
       document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
       player1 = 'red'
-      document.getElementById('player2Score').innerText = player2Score
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -105,9 +103,7 @@ function resetBoard () {
   resetInit = 1
   overallWinner = null
   player1Score = 42
-  document.getElementById('player1Score').innerText = ''
   player2Score = 42
-  document.getElementById('player2Score').innerText = ''
   document.getElementById('playerIndicator').style.backgroundColor = 'red'
   displayWinner()
   for (let i = 0; i <= 5; i++) {
@@ -127,6 +123,7 @@ function resetBoard () {
     [null, null, null, null, null, null, null]
   ]
   document.getElementById('connect4Board').classList.add('remove')
+  openOverlay()
 }
 
 function displayWinner () {
@@ -143,7 +140,7 @@ function displayWinner () {
     winnerDisplay.style.display = 'none'
   } else if (overallWinner === 'red') {
     winnerDisplay.style.display = 'block'
-    winnerName.innerText = 'red'
+    winnerName.innerText = `${player1Name} wins for the red team! ${player1Name}: ${player1Score}, ${player2Name}: ${player2Score}`
     // const offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
     // // eslint-disable-next-line no-unused-vars
     // const offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
@@ -152,7 +149,7 @@ function displayWinner () {
     // })
   } else if (overallWinner === 'yellow') {
     winnerDisplay.style.display = 'block'
-    winnerName.innerText = 'yellow'
+    winnerName.innerText = `${player2Name} wins for the yellow team! ${player1Name}: ${player1Score}, ${player2Name}: ${player2Score}`
   } else if (turn === 42) {
     winnerDisplay.style.display = 'block'
     winnerName.innerText = 'nobody'
@@ -261,22 +258,6 @@ function checkNegDiag (rowNumInt, colNumInt) {
   }
 }
 
-// function updateScoreBoard () {
-//   const fetch = require('node-fetch')
-
-//   fetch('localhost:4000/scoreboard')
-//     .then(resp => resp.json())
-//   const getHighestScore = async () => {
-//     const resp = await fetch('localhost:4000/scoreboard')
-//     const json = await resp.json()
-//     return await json.score
-//   }
-
-//   getHighestScore().then(
-//     score => console.log(`Ditto's score is ${score}`)
-//   )
-// }
-
 function updateScoreBoard () {
   if (overallWinner === 'red') {
     const uploadScore = { playername: player1Name, score: player1Score, playercounter: 'red' }
@@ -294,7 +275,7 @@ function updateScoreBoard () {
         console.log(error)
       })
   } else if (overallWinner === 'yellow') {
-    const uploadScore = { playername: player2Name, score: player2Score, playercounter: 'ellow' }
+    const uploadScore = { playername: player2Name, score: player2Score, playercounter: 'yellow' }
     fetch('http://localhost:4000/scoreboard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -316,6 +297,15 @@ function closeOverlay () {
   document.getElementById('overlay').style.display = 'none'
   player1Name = document.getElementById('playername1').value
   player2Name = document.getElementById('playername2').value
+  document.getElementById('playername1Value').innerText = player1Name
+  document.getElementById('playername2Value').innerText = player2Name
+  // console.log(document.getElementById('player1Name').innerHTML)
+}
+
+function openOverlay () {
+  document.getElementById('overlay').style.display = 'block'
+  player1Name = document.getElementById('playername1').value
+  player2Name = document.getElementById('playername2').value
   // console.log(document.getElementById('player1Name').innerHTML)
 }
 
@@ -333,7 +323,7 @@ function calculateScore () {
 }
 
 const getLeaderboardData = async () => {
-  const resp = await fetch('http://localhost:4000/scoreboard')
+  const resp = await fetch('http://localhost:4000/scoreboard_get')
   const updatedData = await resp.json()
   return await processUpdatedData(updatedData)
 }
@@ -341,10 +331,10 @@ const getLeaderboardData = async () => {
 function processUpdatedData (updatedData) {
   if (turn > 0) {
     const sortByScore = (a, b) => b.score - a.score
+    // eslint-disable-next-line prefer-const
     let sortedData = updatedData.sort(sortByScore)
-    console.log(sortedData)
     // eslint-disable-next-line no-undef
-    for (i = 0; i < 5 && i < sortedData.length; i++) {
+    for (i = 0; i < 10 && i < sortedData.length; i++) {
       // eslint-disable-next-line no-undef
       document.getElementById(`scoreName${i + 1}`).innerText = sortedData[i].playername
       // eslint-disable-next-line no-undef
