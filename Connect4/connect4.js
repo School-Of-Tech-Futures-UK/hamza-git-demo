@@ -1,87 +1,65 @@
-let turn = 0
-let player1 = 'red'
-let resetInit = 0
-let overallWinner = null
-let checkCell = 0
-let player1Score = 0
-let player2Score = 0
-let player1Name = ''
-let player2Name = ''
-
-let gameBoard = [
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null]
-]
-
-// eslint-disable-next-line no-unused-vars
-const winMatrix = [
-  [0, 1, 2, 3],
-  [-1, 0, 1, 2],
-  [-2, -1, 0, 1],
-  [-3, -2, -1, 0]
-]
-
-function currentTurn () {
-  if (turn === 0) {
-    getLeaderboardData()
-    document.getElementById('connect4Board').classList.remove('remove')
-    // const playerTurn=document.getElementById("player-name")
-    // playerTurn.innerText = "red";
-  }
+// eslint-disable-next-line prefer-const
+let gameState = {
+  turn: 0,
+  player1: 'red',
+  resetInit: 0,
+  overallWinner: null,
+  checkCell: 0,
+  player1Score: 0,
+  player2Score: 0,
+  player1Name: '',
+  player2Name: '',
+  gameBoard: [
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null]
+  ],
+  winMatrix: [
+    [0, 1, 2, 3],
+    [-1, 0, 1, 2],
+    [-2, -1, 0, 1],
+    [-3, -2, -1, 0]
+  ]
 }
+
+// function resetAnimation () {
+//   if (gameState.turn === 0) {
+//     getLeaderboardData()
+//     document.getElementById('connect4Board').classList.remove('remove')
+//     // const playerTurn=document.getElementById("player-name")
+//     // playerTurn.innerText = "red";
+//   }
+// }
 
 // eslint-disable-next-line no-unused-vars
 function takeTurn (e) {
-  currentTurn()
+  // resetAnimation()
 
+  const gameStateCopy = { ...gameState }
   const id = e.target.id
-
   const colNum = id[3]
-  // const rowNum = id[1]
 
-  const minRow = getMinRow(colNum, gameBoard) // Lowest available row
+  const minRow = getMinRow(colNum, gameStateCopy.gameBoard) // Lowest available row
+  const switchPlayer = gameStateCopy.player1 === 'red' ? 'yellow' : 'red'
 
-  if (minRow !== null && overallWinner == null && turn < 43) {
-    turn++
-
-    if (player1 === 'red') {
-      document.getElementById('playerIndicator').style.backgroundColor = 'yellow'
-      gameBoard[minRow][colNum] = 'red'
-      document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'red'
-      document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
-      player1 = 'yellow'
-    } else {
-      document.getElementById('playerIndicator').style.backgroundColor = 'red'
-      gameBoard[minRow][colNum] = 'yellow'
-      document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = 'yellow'
-      document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
-      player1 = 'red'
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    const rowNumInt = Number(minRow) // Convert minRow from string to integer
-    // eslint-disable-next-line no-unused-vars
-    const colNumInt = Number(colNum) // Convert colNum from string to integer
-    checkRows(rowNumInt, colNumInt)
-    if (overallWinner === null) {
-      checkColumns(rowNumInt, colNumInt)
-      if (overallWinner === null) {
-        checkPosDiag(rowNumInt, colNumInt)
-        if (overallWinner === null) {
-          checkNegDiag(rowNumInt, colNumInt)
-        }
-      }
-    }
-    displayWinner()
+  if (minRow !== null && gameStateCopy.overallWinner == null && gameStateCopy.turn < 43) {
+    gameStateCopy.turn++
+    drawBoard(gameStateCopy, switchPlayer, minRow, colNum)
+    const rowNumInt = Number(minRow)
+    const colNumInt = Number(colNum)
+    checkWinner(rowNumInt, colNumInt)
   }
+}
 
-  // console.log(`You clicked column ${colNum}`)
-  // console.log(`Turn number ${turn}`)
-  // console.log(gameBoard)
+function drawBoard (gameStateCopy, switchPlayer, minRow, colNum) {
+  document.getElementById('playerIndicator').style.backgroundColor = switchPlayer
+  gameState.gameBoard[minRow][colNum] = gameStateCopy.player1
+  document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = gameStateCopy.player1
+  document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
+  // gameState.player1 = 'yellow'
 }
 
 function getMinRow (colNum, gameBoard) {
@@ -93,17 +71,32 @@ function getMinRow (colNum, gameBoard) {
   return null
 }
 
+function checkWinner (rowNumInt, colNumInt) {
+  const rowResult = checkRows(rowNumInt, colNumInt)
+  const colResult = checkColumns(rowNumInt, colNumInt)
+  const posDiagResult = checkPosDiag(rowNumInt, colNumInt)
+  const negDiagResult = checkNegDiag(rowNumInt, colNumInt)
+  if (rowResult.overallWinner !== null) {
+    gameState = rowResult
+  } else if (colResult.overallWinner !== null) {
+    gameState = colResult
+  } else if (posDiagResult.overallWinner !== null) {
+    gameState = posDiagResult
+  } else if (negDiagResult.overallWinner !== null) {
+    gameState = negDiagResult
+  } else { ; }
+  const winningPlayerName = gameState.overallWinner === 'red' ? gameState.player1Name : gameState.player2Name
+  displayWinner(winningPlayerName)
+}
+
 // eslint-disable-next-line no-unused-vars
 function resetBoard () {
-  console.log('Game reset')
-  turn = 0
-  player1 = 'red'
+  gameState.turn = 0
+  gameState.player1 = 'red'
   // eslint-disable-next-line no-undef
   minRow = 0
-  resetInit = 1
-  overallWinner = null
-  player1Score = 42
-  player2Score = 42
+  gameState.resetInit = 1
+  gameState.overallWinner = null
   document.getElementById('playerIndicator').style.backgroundColor = 'red'
   displayWinner()
   for (let i = 0; i <= 5; i++) {
@@ -114,7 +107,7 @@ function resetBoard () {
       console.log((`R${i}C${j}`).innerText)
     }
   }
-  gameBoard = [
+  gameState.gameBoard = [
     [null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null],
@@ -126,201 +119,171 @@ function resetBoard () {
   openOverlay()
 }
 
-function displayWinner () {
-  calculateScore()
-  updateScoreBoard()
-  getLeaderboardData()
+function displayWinner (winningPlayerName) {
+  const finalScore = calculateScore()
   const winnerName = document.getElementById('winner-name')
   const winnerDisplay = document.getElementById('winner-display')
-  // console.log(overallWinner)
-  if (resetInit === 1) {
+
+  if (gameState.resetInit === 1) {
     winnerDisplay.style.display = 'none'
-    resetInit = 0
-  } else if (overallWinner === 'null') {
+    gameState.resetInit = 0
+  } else if (gameState.overallWinner === 'null') {
     winnerDisplay.style.display = 'none'
-  } else if (overallWinner === 'red') {
+  } else if (gameState.turn === 42) {
     winnerDisplay.style.display = 'block'
-    winnerName.innerText = `${player1Name} wins for the red team! ${player1Name}: ${player1Score}, ${player2Name}: ${player2Score}`
-    // const offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
-    // // eslint-disable-next-line no-unused-vars
-    // const offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
-    //   // eslint-disable-next-line no-undef
-    //   return new bootstrap.Offcanvas(offcanvasEl)
-    // })
-  } else if (overallWinner === 'yellow') {
+    winnerDisplay.style.display = 'Nobody wins'
+  } else if (gameState.overallWinner !== null) {
+    updateScoreBoard(winningPlayerName, finalScore)
     winnerDisplay.style.display = 'block'
-    winnerName.innerText = `${player2Name} wins for the yellow team! ${player1Name}: ${player1Score}, ${player2Name}: ${player2Score}`
-  } else if (turn === 42) {
-    winnerDisplay.style.display = 'block'
-    winnerName.innerText = 'nobody'
-    return 'nobody'
+    winnerName.innerText = `${winningPlayerName} wins for the ${gameState.overallWinner} team! Final score: ${finalScore}`
+    getLeaderboardData()
   // eslint-disable-next-line no-unused-expressions
-  } else null
+  } else getLeaderboardData()
 }
 
 function checkRows (rowNumInt, colNumInt) {
-  for (checkCell = 0; checkCell < 4; checkCell++) {
+  const gameStateCopy = { ...gameState }
+  for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
     // Rows
-    if (gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][0]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][1]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][2]] === 'red' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][3]] === 'red') {
+    if (gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'red' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'red' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'red' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'red') {
       // eslint-disable-next-line no-return-assign
-      return overallWinner = 'red'
-    } else if (gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][0]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][1]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][2]] === 'yellow' &&
-        gameBoard[rowNumInt][colNumInt + winMatrix[checkCell][3]] === 'yellow') {
+      gameStateCopy.overallWinner = 'red'
+    } else if (gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'yellow' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'yellow' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'yellow' &&
+        gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'yellow') {
       // eslint-disable-next-line no-return-assign
-      return overallWinner = 'yellow'
-    } else { overallWinner = null }
+      gameStateCopy.overallWinner = 'yellow'
+    } else { ; }
   }
+  return gameStateCopy
 }
 
 function checkColumns (rowNumInt, colNumInt) {
-  for (checkCell = 0; checkCell < 4; checkCell++) {
-    if ((rowNumInt - winMatrix[checkCell][0]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][0]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][1]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][1]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][2]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][2]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][3]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][3]) <= 5) {
-      if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt] === 'red' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt] === 'red') {
+  const gameStateCopy = { ...gameState }
+  for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
+    if ((rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) <= 5) {
+      if (gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt] === 'red' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt] === 'red' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt] === 'red' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt] === 'red') {
       // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      } else if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt] === 'yellow' &&
-                    gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt] === 'yellow') {
+        gameStateCopy.overallWinner = 'red'
+      } else if (gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt] === 'yellow' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt] === 'yellow' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt] === 'yellow' &&
+                    gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt] === 'yellow') {
       // eslint-disable-next-line no-return-assign
-        return overallWinner = 'yellow'
-      } else { overallWinner = null }
+        gameStateCopy.overallWinner = 'yellow'
+      } else { ; }
     }
   }
+  return gameStateCopy
 }
 
 function checkPosDiag (rowNumInt, colNumInt) {
-  for (checkCell = 0; checkCell < 4; checkCell++) {
-    if ((rowNumInt - winMatrix[checkCell][0]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][0]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][1]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][1]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][2]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][2]) <= 5 &&
-        (rowNumInt - winMatrix[checkCell][3]) >= 0 &&
-        (rowNumInt - winMatrix[checkCell][3]) <= 5) {
-      if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'red' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'red' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'red' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'red') {
+  const gameStateCopy = { ...gameState }
+  for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
+    if ((rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) <= 5 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) >= 0 &&
+        (rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) <= 5) {
+      if (gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'red' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'red' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'red' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'red') {
       // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      } else if (gameBoard[rowNumInt - winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'yellow' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'yellow' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'yellow' &&
-      gameBoard[rowNumInt - winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'yellow') {
+        gameStateCopy.overallWinner = 'red'
+      } else if (gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt - gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'yellow') {
         // eslint-disable-next-line no-return-assign
-        return overallWinner = 'yellow'
-      } else { overallWinner = null }
+        gameStateCopy.overallWinner = 'yellow'
+      } else { ; }
     }
   }
+  return gameStateCopy
 }
 
 function checkNegDiag (rowNumInt, colNumInt) {
-  for (checkCell = 0; checkCell < 4; checkCell++) {
-    if ((rowNumInt + winMatrix[checkCell][0]) >= 0 &&
-        (rowNumInt + winMatrix[checkCell][0]) <= 5 &&
-        (rowNumInt + winMatrix[checkCell][1]) >= 0 &&
-        (rowNumInt + winMatrix[checkCell][1]) <= 5 &&
-        (rowNumInt + winMatrix[checkCell][2]) >= 0 &&
-        (rowNumInt + winMatrix[checkCell][2]) <= 5 &&
-        (rowNumInt + winMatrix[checkCell][3]) >= 0 &&
-        (rowNumInt + winMatrix[checkCell][3]) <= 5) {
-      if (gameBoard[rowNumInt + winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'red' &&
-       gameBoard[rowNumInt + winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'red' &&
-       gameBoard[rowNumInt + winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'red' &&
-       gameBoard[rowNumInt + winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'red') {
+  const gameStateCopy = { ...gameState }
+  for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
+    if ((rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) >= 0 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]) <= 5 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) >= 0 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]) <= 5 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) >= 0 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]) <= 5 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) >= 0 &&
+        (rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]) <= 5) {
+      if (gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'red' &&
+       gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'red' &&
+       gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'red' &&
+       gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'red') {
         // eslint-disable-next-line no-return-assign
-        return overallWinner = 'red'
-      } else if (gameBoard[rowNumInt + winMatrix[checkCell][0]][colNumInt + winMatrix[checkCell][0]] === 'yellow' &&
-      gameBoard[rowNumInt + winMatrix[checkCell][1]][colNumInt + winMatrix[checkCell][1]] === 'yellow' &&
-      gameBoard[rowNumInt + winMatrix[checkCell][2]][colNumInt + winMatrix[checkCell][2]] === 'yellow' &&
-      gameBoard[rowNumInt + winMatrix[checkCell][3]][colNumInt + winMatrix[checkCell][3]] === 'yellow') {
+        gameStateCopy.overallWinner = 'red'
+      } else if (gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'yellow' &&
+      gameStateCopy.gameBoard[rowNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'yellow') {
         // eslint-disable-next-line no-return-assign
-        return overallWinner = 'yellow'
-      } else { overallWinner = null }
+        gameStateCopy.overallWinner = 'yellow'
+      } else { ; }
     }
   }
+  return gameStateCopy
 }
 
-function updateScoreBoard () {
-  if (overallWinner === 'red') {
-    const uploadScore = { playername: player1Name, score: player1Score, playercounter: 'red' }
-    fetch('http://localhost:4000/scoreboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(uploadScore)
+function updateScoreBoard (winningPlayerName, finalScore) {
+  const uploadScore = { playername: winningPlayerName, score: finalScore, playercounter: gameState.overallWinner }
+  fetch('http://localhost:4000/scoreboard', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(uploadScore)
+  })
+    .then(function (response) {
+      if (response.ok) {
+        return
+      } throw new Error('Request Failed')
     })
-      .then(function (response) {
-        if (response.ok) {
-          return
-        } throw new Error('Request Failed')
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  } else if (overallWinner === 'yellow') {
-    const uploadScore = { playername: player2Name, score: player2Score, playercounter: 'yellow' }
-    fetch('http://localhost:4000/scoreboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(uploadScore)
+    .catch(function (error) {
+      console.log(error)
     })
-      .then(function (response) {
-        if (response.ok) {
-          return
-        } throw new Error('Request Failed')
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-  } else return null
 }
 
 // eslint-disable-next-line no-unused-vars
 function closeOverlay () {
   document.getElementById('overlay').style.display = 'none'
-  player1Name = document.getElementById('playername1').value
-  player2Name = document.getElementById('playername2').value
-  document.getElementById('playername1Value').innerText = player1Name
-  document.getElementById('playername2Value').innerText = player2Name
+  gameState.player1Name = document.getElementById('playername1').value
+  gameState.player2Name = document.getElementById('playername2').value
+  document.getElementById('playername1Value').innerText = gameState.player1Name
+  document.getElementById('playername2Value').innerText = gameState.player2Name
   // console.log(document.getElementById('player1Name').innerHTML)
 }
 
 function openOverlay () {
   document.getElementById('overlay').style.display = 'block'
-  player1Name = document.getElementById('playername1').value
-  player2Name = document.getElementById('playername2').value
+  gameState.player1Name = document.getElementById('playername1').value
+  gameState.player2Name = document.getElementById('playername2').value
   // console.log(document.getElementById('player1Name').innerHTML)
 }
 
-function calculateScore () {
-  if (overallWinner === 'red') {
-    player1Score = 42 - turn
-    player2Score = 0
-  } else if (overallWinner === 'yellow') {
-    player1Score = 0
-    player2Score = 42 - turn
-  } else {
-    player1Score = 0
-    player2Score = 0
-  }
-}
+const calculateScore = () => 42 - gameState.turn
 
 const getLeaderboardData = async () => {
   const resp = await fetch('http://localhost:4000/scoreboard_get')
@@ -329,7 +292,7 @@ const getLeaderboardData = async () => {
 }
 
 function processUpdatedData (updatedData) {
-  if (turn > 0) {
+  if (gameState.turn > 0) {
     const sortByScore = (a, b) => b.score - a.score
     // eslint-disable-next-line prefer-const
     let sortedData = updatedData.sort(sortByScore)
@@ -341,4 +304,11 @@ function processUpdatedData (updatedData) {
       document.getElementById(`scoreValue${i + 1}`).innerText = sortedData[i].score
     }
   }
+}
+
+if (typeof exports === 'object') {
+  console.log('Running in Node')
+  module.exports = { getMinRow, calculateScore }
+} else {
+  console.log('Running in Browser')
 }
