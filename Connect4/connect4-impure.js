@@ -30,7 +30,7 @@ function drawBoard (gameStateCopy, switchPlayer, minRow, colNum) {
   gameState.gameBoard[minRow][colNum] = gameStateCopy.player1
   document.getElementById(`R${minRow}C${colNum}`).style.backgroundColor = gameStateCopy.player1
   document.getElementById(`R${minRow}C${colNum}`).classList.add('fall')
-  // gameState.player1 = 'yellow'
+  gameStateCopy.player1 = switchPlayer
 }
 
 function checkWinner (rowNumInt, colNumInt) {
@@ -136,8 +136,5 @@ function processUpdatedData (updatedData) {
 }
 
 // if (typeof exports === 'object') {
-//   console.log('Running in Node')
 //   module.exports = { getMinRow, calculateScore }
-// } else {
-//   console.log('Running in Browser')
-// }
+// } else { ; }

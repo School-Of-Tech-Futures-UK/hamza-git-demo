@@ -13,6 +13,7 @@ function takeTurn (e) {
   if (minRow !== null && gameStateCopy.overallWinner == null && gameStateCopy.turn < 43) {
     gameStateCopy.turn++
     drawBoard(gameStateCopy, switchPlayer, minRow, colNum)
+    gameState = gameStateCopy
     const rowNumInt = Number(minRow)
     const colNumInt = Number(colNum)
     checkWinner(rowNumInt, colNumInt)
@@ -161,9 +162,6 @@ const getLeaderboardData = async () => {
   return await processUpdatedData(updatedData)
 }
 
-// if (typeof exports === 'object') {
-//   console.log('Running in Node')
-//   module.exports = { getMinRow, calculateScore }
-// } else {
-//   console.log('Running in Browser')
-// }
+if (typeof exports === 'object') {
+  module.exports = { getMinRow, checkRows, checkColumns, checkPosDiag, checkNegDiag }
+} else { ; }
