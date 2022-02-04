@@ -18,6 +18,19 @@ body {
     font-family: "Graphik-Regular"
 }
 
+.btn-primary{
+    background-color: #a100ff;
+    border-color:#a100ff;
+}
+
+.btn-primary:hover, 
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:visited{
+    background-color: #7500c0;
+    border-color: #7500c0;
+}
+
 .col {
     /* width: 20px; */
     height: 50px;
@@ -25,45 +38,124 @@ body {
     margin: 5px;
     border: 2px rgb(0, 15, 151) solid; 
     border-radius: 100px;
-    /* align-items: center; */
     background-color: white;
+    /* align-items: center; */
     box-shadow: inset 0.08em 0.08em 0.08em 0 rgba(255,255,255,0.5), inset -0.08em -0.08em 0.08em 0 rgba(0,0,0,0.5);
 }
 
+.col.image{
+    border-radius: 0px;
+    padding: 0px;
+    box-shadow: none;
+    border: 0px;
+    flex-basis: 50px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.col.score{
+    flex-basis: 80px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    background-color: none;
+}
+
+#imageCol1{
+    background-image: url("./Assets/Images/Leaderboard-01.webp");
+    background-size: 50px 50px;
+    border-radius: 100px;
+}
+
+#imageCol2{
+    background-image: url("./Assets/Images/Leaderboard-02.webp");
+    background-size: 50px 50px;
+    border-radius: 100px;
+}
+
+#imageCol3{
+    background-image: url("./Assets/Images/Leaderboard-04.webp");
+    background-size: 50px 50px;
+    border-radius: 100px;
+}
+
+#imageCol4{
+    background-image: url("./Assets/Images/Leaderboard-03.webp");
+    background-size: 50px 50px;
+    border-radius: 100px;
+}
+
 #leaderCol {
-    border-bottom: 2px solid black;
+    border-bottom: 0px solid black;
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
     border-radius: 0px;
     box-shadow: none;
+    background-color: transparent;
+    font-family: "Graphik-Bold";
+    -webkit-text-stroke-width: 0.5px;
+    -webkit-text-stroke-color: black;
+    font-size: 20px;
 }
 
 #scoreBoard{
-    padding-left: 600px;
-    padding-right: 600px;
+    /* padding-left: 600px;
+    padding-right: 600px; */
+    border: 0px solid black;
 }
 
-.scoreCol {
-    border: 0px solid black;
+.row {
+    background-color: none;
+}
+
+.row.score{
+    background-color: white;
+    margin: 10px;
+    border-radius: 200px;
+    width: 475px;
 }
 
 #winner-display {
     display: none;
-    background-color: rgb(196, 196, 196);
     padding: 20px;
-    color: rgb(117, 0 ,192);
-    border: 10px black;
+    color: white;
     font-family: "Graphik-Bold";
-    font-size: 20px;
+    font-size: 30px;
 }
 
 #buttonStyle{
     font-size: large;
 }
 
-/* #navBar{
-} */
+#videoContainer {
+    /* height: 300px;
+    width: 300px; */
+    position: relative;
+}
+
+#backgroundVideo {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  object-fit: cover;
+  z-index: -1;
+}
+
+#caption {
+    z-index: 1;
+    position: relative;
+    padding-top: 60px;
+    padding-bottom: 70px;
+    padding-right: 100px;
+    padding-left: 100px;
+  }
+
+#versus{
+    background-image: linear-gradient(to right, red , yellow);
+    border-radius: 20px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
 
 #connect4Board{
     background-color: rgb(0,65,240);
@@ -79,11 +171,17 @@ body {
 .parentFlex{
     display: flex;
     flex-wrap: wrap;
-    margin: 40px;
-    margin-left: 100px;
+    /* margin-left: 100px;
     margin-right: 100px;
+    margin-bottom: 100px; */
+    padding-bottom: 30px;
+    padding-top: 30px;
     gap: 20px 50px;
     justify-content: center;
+    background-image: url("./Assets/Images/Board_Background-01.webp");
+    background-position: center bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .childFlex1{
@@ -100,13 +198,9 @@ body {
 .header{
     text-align: left;
     line-height: 15px;
-    padding-top: 60px;
-    padding-bottom: 70px;
-    padding-right: 100px;
-    padding-left: 100px;
-    /* height:300px; */
+    height:300px;
     /* background-color: purple; */
-    background-image: url("./Assets/Images/Gradient4_clean.jpg");
+    /* background-image: url("./Assets/Images/Gradient4_clean.webp"); */
     background-position:bottom right;
     color: white;
 }
@@ -116,7 +210,7 @@ body {
 }
 
 .semiBoldText{
-    font-size: "Graphik-Semibold";
+    font-family: "Graphik-Semibold";
 }
 
 .boldText.largeText{
@@ -125,6 +219,19 @@ body {
 
 .semiBoldText.mediumText{
     font-size: 30px;
+}
+
+.semiBoldText.smallText{
+    font-size: 20px;
+    color: white;
+    margin-right: 75px;
+}
+
+.input-group.mb-3{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left:50px;
 }
 
 .navbartop-custom {
@@ -156,7 +263,6 @@ body {
 
 #overlay {
     position: fixed; /* Sit on top of the page content */
-    display: block; /* Hidden by default */
     width: 100%; /* Full width (cover the whole page) */
     height: 100%; /* Full height (cover the whole page) */
     top: 0;
@@ -166,6 +272,13 @@ body {
     background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
     z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
     cursor: pointer; /* Add a pointer on hover */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0px 0px;
+    padding-top: 100px;
+    overflow-y: scroll;
   }
 
 #overlayText {
@@ -186,6 +299,62 @@ body {
 .remove {
     animation-name: remove-animation;
     animation-duration: 500ms;
+}
+
+#winnerOverlay {
+    position: fixed; /* Sit on top of the page content */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(0, 0, 0, 0.8); /*Black background with opacity */
+    z-index: 3; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+    display: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0px 0px;
+    padding-top: 100px;
+    overflow-y: scroll;
+  }
+
+#winnerOverlayText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%)
+  }
+
+.winnerChildFlex1{
+    flex-grow: 0.25;
+}
+
+.winnerChildFlex2{
+    flex-grow: 0.5;
+    flex-basis: 475px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+#nameError{
+    display: none;
+    font-family: "Graphik-Bold";
+    font-size: 25px;
+}
+
+.footer{
+    background-color: black;
+    padding: 20px;
+    padding-top: 30px;
+    text-align: left;
+    color: grey;
 }
 
 @keyframes fall-animation {

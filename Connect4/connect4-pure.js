@@ -1,8 +1,9 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 // eslint-disable-next-line no-unused-vars
-function takeTurn (e) {
-  // resetAnimation()
 
+// Allows player to place their disc on the board
+function takeTurn (e) {
   const gameStateCopy = { ...gameState }
   const id = e.target.id
   const colNum = id[3]
@@ -20,6 +21,7 @@ function takeTurn (e) {
   }
 }
 
+// Determines the lowest available row within a column so that a disc can be placed
 function getMinRow (colNum, gameBoard) {
   for (let i = 5; i >= 0; i--) {
     if (gameBoard[i][colNum] === null) {
@@ -29,6 +31,7 @@ function getMinRow (colNum, gameBoard) {
   return null
 }
 
+// Checks grid to determine if there are 4 consecutive discs in a row (→)
 function checkRows (gameState, rowNumInt, colNumInt) {
   const gameStateCopy = { ...gameState }
   for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
@@ -39,17 +42,20 @@ function checkRows (gameState, rowNumInt, colNumInt) {
         gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'red') {
       // eslint-disable-next-line no-return-assign
       gameStateCopy.overallWinner = 'red'
+      winMatrixIndex = gameStateCopy.checkCell
     } else if (gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][0]] === 'yellow' &&
         gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][1]] === 'yellow' &&
         gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][2]] === 'yellow' &&
         gameStateCopy.gameBoard[rowNumInt][colNumInt + gameStateCopy.winMatrix[gameStateCopy.checkCell][3]] === 'yellow') {
       // eslint-disable-next-line no-return-assign
       gameStateCopy.overallWinner = 'yellow'
+      winMatrixIndex = gameStateCopy.checkCell
     } else { ; }
   }
   return gameStateCopy
 }
 
+// Checks grid to determine if there are 4 consecutive discs in a column (↑)
 function checkColumns (gameState, rowNumInt, colNumInt) {
   const gameStateCopy = { ...gameState }
   for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
@@ -79,6 +85,7 @@ function checkColumns (gameState, rowNumInt, colNumInt) {
   return gameStateCopy
 }
 
+// Checks grid to determine if there are 4 consecutive discs in the positive diagonal direction (↗)
 function checkPosDiag (gameState, rowNumInt, colNumInt) {
   const gameStateCopy = { ...gameState }
   for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
@@ -108,6 +115,7 @@ function checkPosDiag (gameState, rowNumInt, colNumInt) {
   return gameStateCopy
 }
 
+// Checks grid to determine if there are 4 consecutive discs in the negative diagonal direction (↘)
 function checkNegDiag (gameState, rowNumInt, colNumInt) {
   const gameStateCopy = { ...gameState }
   for (gameStateCopy.checkCell = 0; gameStateCopy.checkCell < 4; gameStateCopy.checkCell++) {
@@ -137,6 +145,7 @@ function checkNegDiag (gameState, rowNumInt, colNumInt) {
   return gameStateCopy
 }
 
+// Uploads winner to the server
 function updateScoreBoard (gameState, winningPlayerName, finalScore) {
   const uploadScore = { playername: winningPlayerName, score: finalScore, playercounter: gameState.overallWinner }
   fetch('http://localhost:4000/scoreboard', {
@@ -154,14 +163,17 @@ function updateScoreBoard (gameState, winningPlayerName, finalScore) {
     })
 }
 
+// Determines the score of the winning player
 const calculateScore = (gameState) => 42 - gameState.turn
 
+// Obtains leaderboard data from the server
 const getLeaderboardData = async () => {
   const resp = await fetch('http://localhost:4000/scoreboard_get')
   const updatedData = await resp.json()
   return await processUpdatedData(updatedData)
 }
 
+// Exports modules for automated testing purposes
 if (typeof exports === 'object') {
   module.exports = { getMinRow, checkRows, checkColumns, checkPosDiag, checkNegDiag }
 } else { ; }

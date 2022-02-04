@@ -1,4 +1,9 @@
+/* eslint-disable no-undef */
+/* eslint-disable node/no-path-concat */
+/* eslint-disable no-unused-vars */
 // eslint-disable-next-line prefer-const
+
+// Object that contains all variables required to control the game
 let gameState = {
   turn: 0,
   player1: 'red',
@@ -25,6 +30,7 @@ let gameState = {
   ]
 }
 
+// Responsible for placing discs on board
 function drawBoard (gameStateCopy, switchPlayer, minRow, colNum) {
   document.getElementById('playerIndicator').style.backgroundColor = switchPlayer
   gameState.gameBoard[minRow][colNum] = gameStateCopy.player1
@@ -33,6 +39,7 @@ function drawBoard (gameStateCopy, switchPlayer, minRow, colNum) {
   gameStateCopy.player1 = switchPlayer
 }
 
+// Collates checkRow, checkCol, checkPosDiag, checkNegDiag (from connect4-pure) to determine winner of the game
 function checkWinner (rowNumInt, colNumInt) {
   const rowResult = checkRows(gameState, rowNumInt, colNumInt)
   const colResult = checkColumns(gameState, rowNumInt, colNumInt)
@@ -51,7 +58,7 @@ function checkWinner (rowNumInt, colNumInt) {
   displayWinner(winningPlayerName)
 }
 
-// eslint-disable-next-line no-unused-vars
+// Clears the board so that a new game can be played
 function resetBoard () {
   gameState.turn = 0
   gameState.player1 = 'red'
@@ -81,6 +88,7 @@ function resetBoard () {
   openOverlay()
 }
 
+// Opens overlay to present the winner and leaderboard
 function displayWinner (winningPlayerName) {
   const finalScore = calculateScore(gameState)
   const winnerName = document.getElementById('winner-name')
@@ -92,19 +100,43 @@ function displayWinner (winningPlayerName) {
   } else if (gameState.overallWinner === 'null') {
     winnerDisplay.style.display = 'none'
   } else if (gameState.turn === 42) {
-    winnerDisplay.style.display = 'block'
-    winnerDisplay.style.display = 'Nobody wins'
+    winnerDisplay.style.display = 'flex'
+    winnerName.innerText = 'Nobody wins!'
+    document.getElementById('winnerOverlay').style.display = 'flex'
   } else if (gameState.overallWinner !== null) {
     updateScoreBoard(gameState, winningPlayerName, finalScore)
-    winnerDisplay.style.display = 'block'
+    winnerDisplay.style.display = 'flex'
     winnerName.innerText = `${winningPlayerName} wins for the ${gameState.overallWinner} team! Final score: ${finalScore}`
+    winnerName.style.color = gameState.overallWinner
     getLeaderboardData()
+    document.getElementById('winnerOverlay').style.display = 'flex'
   // eslint-disable-next-line no-unused-expressions
   } else getLeaderboardData()
 }
 
-// eslint-disable-next-line no-unused-vars
+// Checks to ensure whether player name fields are not left empty
+function validateFields () {
+  if (document.getElementById('playername1').value === '' && document.getElementById('playername2').value === '') {
+    document.getElementById('nameError').style.display = 'block'
+    document.getElementById('error1').style.color = 'red'
+    document.getElementById('error2').style.color = 'red'
+  } else if (document.getElementById('playername1').value === '') {
+    document.getElementById('nameError').style.display = 'block'
+    document.getElementById('error1').style.color = 'red'
+    document.getElementById('error2').style.color = 'white'
+  } else if (document.getElementById('playername2').value === '') {
+    document.getElementById('nameError').style.display = 'block'
+    document.getElementById('error1').style.color = 'white'
+    document.getElementById('error2').style.color = 'red'
+  } else {
+    closeOverlay()
+  }
+}
+
+// Closes the overlay once player names are entered
 function closeOverlay () {
+  resetBoard()
+  document.getElementById('nameError').style.display = 'none'
   document.getElementById('overlay').style.display = 'none'
   gameState.player1Name = document.getElementById('playername1').value
   gameState.player2Name = document.getElementById('playername2').value
@@ -113,28 +145,36 @@ function closeOverlay () {
   // console.log(document.getElementById('player1Name').innerHTML)
 }
 
+// Opens the overlay to allow user to enter player names
 function openOverlay () {
-  document.getElementById('overlay').style.display = 'block'
+  document.getElementById('error1').style.color = 'white'
+  document.getElementById('error2').style.color = 'white'
+  document.getElementById('winnerOverlay').style.display = 'none'
+  document.getElementById('overlay').style.display = 'flex'
   gameState.player1Name = document.getElementById('playername1').value
   gameState.player2Name = document.getElementById('playername2').value
   // console.log(document.getElementById('player1Name').innerHTML)
 }
 
+// Orders leaderboard data from highest to lowest and populates the leaderboard
 function processUpdatedData (updatedData) {
   if (gameState.turn > 0) {
     const sortByScore = (a, b) => b.score - a.score
     // eslint-disable-next-line prefer-const
     let sortedData = updatedData.sort(sortByScore)
     // eslint-disable-next-line no-undef
-    for (i = 0; i < 10 && i < sortedData.length; i++) {
+    for (let i = 0; i < 10 && i < sortedData.length; i++) {
       // eslint-disable-next-line no-undef
-      document.getElementById(`scoreName${i + 1}`).innerText = `${sortedData[i].playername} (${sortedData[i].playercounter})`
+      document.getElementById(`scoreName${i + 1}`).innerText = sortedData[i].playername
       // eslint-disable-next-line no-undef
       document.getElementById(`scoreValue${i + 1}`).innerText = sortedData[i].score
+      document.getElementById(`scoreValue${i + 1}`).style.color = sortedData[i].playercounter
     }
   }
 }
 
-// if (typeof exports === 'object') {
-//   module.exports = { getMinRow, calculateScore }
-// } else { ; }
+// Creates an overlay when a winner/nobody is a winner is declared
+function winnerOverlay () {
+  const winnerOverlay = document.getElementsByTagName('winnerOverlay')
+  document.getElementById('winnerOverlay').style.display = 'flex'
+}
