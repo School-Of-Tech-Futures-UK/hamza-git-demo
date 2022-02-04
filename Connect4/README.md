@@ -42,6 +42,15 @@ http://localhost:4000/scoreboard
 
 > This will allow you to view how the winner's score is being saved
 
+The scores are populated in the file
+```bash
+leaderboard.json
+```
+> This file contains the names and scores of the winners. To reset the leaderboard, the contents of this file should be cleared and initialised with just an empty array i.e.
+```bash
+[]
+```
+
 ## Contributing
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
